@@ -12,26 +12,12 @@ class TCPDataset(InMemoryDataset):
     """
     Args:
         root (string): Root directory where the dataset should be saved.
-        name (string): The `name
-            <https://chrsmrrs.github.io/datasets/docs/datasets/>`_ of the
-            dataset.
-        transform (callable, optional): A function/transform that takes in an
-            :obj:`torch_geometric.data.Data` object and returns a transformed
-            version. The data object will be transformed before every access.
-            (default: :obj:`None`)
-        pre_transform (callable, optional): A function/transform that takes in
-            an :obj:`torch_geometric.data.Data` object and returns a
-            transformed version. The data object will be transformed before
-            being saved to disk. (default: :obj:`None`)
-        use_node_attr (bool, optional): If :obj:`True`, the dataset will
-            contain additional continuous node attributes (if present).
-            (default: :obj:`False`)
-        use_edge_attr (bool, optional): If :obj:`True`, the dataset will
-            contain additional continuous edge attributes (if present).
-            (default: :obj:`False`)
+        name (string): 'train' or 'valid_query' or 'test_query'
     """
 
-    def __init__(self, root):
+    def __init__(self, root, f_name='train'):
+        assert f_name in ['train', 'valid_query', 'test_query']
+        self.f_name = f_name
         super(TCPDataset, self).__init__(root)
         self.data, self.slices = torch.load(self.processed_paths[0])
 
@@ -83,7 +69,7 @@ class TCPDataset(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return 'data.pt'
+        return f'data_{self.f_name}.pt'
 
     def download(self):
         try:
@@ -92,11 +78,16 @@ class TCPDataset(InMemoryDataset):
             raise ValueError(f'Save four directory to {self.root}/raw by unzipping given zip files')
 
     def process(self):
-        self.data, self.slices = read_tcp_data(self.raw_dir)
+        self.data, self.slices = read_tcp_data(self.raw_dir, self.f_name)
         torch.save((self.data, self.slices), self.processed_paths[0])
 
     def __repr__(self):
         return '{}({})'.format(self.name, len(self))
 
 if __name__=='__main__':
+    print('train')
     dataset = TCPDataset(root='./data')
+    print('valid_qry')
+    dataset_val = TCPDataset(root='./data', f_name='valid_query')
+    print('test_qry')
+    dataset_test = TCPDataset(root='./data', f_name='test_query')
