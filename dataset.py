@@ -82,7 +82,7 @@ class TCPDataset(InMemoryDataset):
         torch.save((self.data, self.slices), self.processed_paths[0])
 
     def __repr__(self):
-        return '{}({})'.format(self.name, len(self))
+        return '{}({})'.format(self.f_name, len(self))
 
 if __name__=='__main__':
     print('train')
