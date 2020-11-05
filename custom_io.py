@@ -144,23 +144,24 @@ def read_tcp_data(folder, f_name):
     # edge_att2 : time...
     # TODO November 04, 2020: edge_att2 will be added (containing time information)
 
-    # edge_label : what types of attack happend in this connection path in a graph
-    if f_name=='train':
-        edge_labels = []
-        temp = df.groupby(['auxiliary_source', 'auxiliary_destination']).apply(lambda x: x.attack)
-        for edge in edge_count.index:
-            edge_attack_types = temp[edge].unique()
-            label = torch.zeros(len(ATTACK_TYPES))
-            for edge_atk in edge_attack_types:
-                a_type = ATTACK_TYPES.index(edge_atk)
-                label[a_type] = 1.
-            edge_labels.append(label)
-        edge_labels = torch.stack(edge_labels)
-    else:
-        edge_labels = torch.zeros(edge_att1.size(0), len(ATTACK_TYPES))
+    # # edge_label : what types of attack happend in this connection path in a graph
+    # if f_name=='train':
+    #     edge_labels = []
+    #     temp = df.groupby(['auxiliary_source', 'auxiliary_destination']).apply(lambda x: x.attack)
+    #     for edge in edge_count.index:
+    #         edge_attack_types = temp[edge].unique()
+    #         label = torch.zeros(len(ATTACK_TYPES))
+    #         for edge_atk in edge_attack_types:
+    #             a_type = ATTACK_TYPES.index(edge_atk)
+    #             label[a_type] = 1.
+    #         edge_labels.append(label)
+    #     edge_labels = torch.stack(edge_labels)
+    # else:
+    #     edge_labels = torch.zeros(edge_att1.size(0), len(ATTACK_TYPES))
 
     # aggregate
-    edge_attr = torch.cat([edge_att1.unsqueeze(1), edge_labels], axis=1)
+    # edge_attr = torch.cat([edge_att1.unsqueeze(1), edge_labels], axis=1)
+    edge_attr = torch.cat([edge_att1.unsqueeze(1)], axis=1)
 
     #
     # STEP 3: Graph label
